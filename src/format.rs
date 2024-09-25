@@ -7,7 +7,9 @@ use std::path::PathBuf;
 pub type Pid = isize;
 
 /// Describing how to use the command line arguments
-pub fn print_usage() {}
+pub fn print_usage() {
+    println!("cargo run shell [-f script_file.sh] [-h history_file.txt] [--help]");
+}
 
 /// User prompt before entering commands
 pub fn print_prompt(dir: &PathBuf, pid: Pid) {}
