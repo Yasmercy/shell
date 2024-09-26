@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::data::*;
-use std::path::PathBuf;
+use std::{io::Write, path::PathBuf};
 
 /// Re-exporting pid_t as isize
 pub type Pid = isize;
@@ -12,7 +12,10 @@ pub fn print_usage() {
 }
 
 /// User prompt before entering commands
-pub fn print_prompt(dir: &PathBuf, pid: Pid) {}
+pub fn print_prompt(dir: &PathBuf, pid: Pid) {
+    print!("({})[{}]$", dir.display(), pid);
+    std::io::stdout().flush().expect("flushing failed");
+}
 
 /// Displays a command to the user, with a newline
 pub fn print_command(command: &Command) {}
@@ -23,7 +26,9 @@ pub fn print_invalid_command(command: &str) {}
 
 /// Displays a command to the user,
 /// after it has finished executing
-pub fn print_command_executed(pid: Pid) {}
+pub fn print_command_executed(pid: Pid, command: &Command) {
+    println!("({}) {} {:?}", pid, command.filename, command.args);
+}
 
 /// Error during the opening of a script file
 /// that is first argument after -f

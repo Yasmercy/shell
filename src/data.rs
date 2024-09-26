@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 /// private struct to represent logical chaining
+/// these are all *left-associative*
 pub enum Logic {
     /// A && B --- execute B only if A
     And,
@@ -14,19 +15,21 @@ pub enum Logic {
 /// which is implemented as a linked list
 /// to support redirection and logical ops
 pub struct Command {
-    /// the command that executes THIS command
-    /// does not contain the commands for chain
-    pub command_str: String,
+    /// note: does not contain any info about chain
+    /// the filename of the command (in PATH)
+    pub filename: String,
+    /// the arguments to pass into the cmd
+    pub args: Vec<String>,
     /// optional chaining with && || ;
     pub chain: Option<(Logic, Box<Command>)>,
     /// whether this command should be in fg or bg
     pub synchronous: bool,
     /// a filename to output into
-    pub output: PathBuf,
+    pub output: Option<PathBuf>,
     /// a filename to append into
-    pub append: PathBuf,
+    pub append: Option<PathBuf>,
     /// a filename to get input from
-    pub input: PathBuf,
+    pub input: Option<PathBuf>,
 }
 
 /// A vector of stored commands in memory
