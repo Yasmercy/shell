@@ -26,8 +26,8 @@ pub fn print_invalid_command(command: &str) {}
 
 /// Displays a command to the user,
 /// after it has finished executing
-pub fn print_command_executed(pid: Pid, command: &Command) {
-    println!("({}) {} {:?}", pid, command.filename, command.args);
+pub fn print_command_executed(pid: Pid) {
+    println!("Command executed by pid={}", pid);
 }
 
 /// Error during the opening of a script file

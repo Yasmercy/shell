@@ -1,3 +1,5 @@
+#![feature(linux_pidfd)]
+
 mod builtins;
 mod command;
 mod data;
@@ -40,7 +42,10 @@ enum Command {
 fn mainloop(read: RawFd, write: Option<RawFd>) {
     let mut line = String::new();
 
-    print_prompt(&std::env::current_dir().unwrap(), 0);
+    print_prompt(
+        &std::env::current_dir().unwrap(),
+        std::process::id() as isize,
+    );
     let mut reader = unsafe { BufReader::new(File::from_raw_fd(read)) };
 
     while let Ok(num_bytes) = reader.read_line(&mut line) {
@@ -48,10 +53,13 @@ fn mainloop(read: RawFd, write: Option<RawFd>) {
             break;
         }
 
-        let command = data::Command::new(&line);
-        let _pinfo = ProcessInfo::execute(command);
+        if let Some(command) = data::Command::new(&line) {
+            let _pinfo = ProcessInfo::execute(command);
+            print_prompt(&std::env::current_dir().unwrap(), std::process::id() as isize);
+        } else {
+            print_usage();
+        }
 
-        print_prompt(&std::env::current_dir().unwrap(), 0);
         line.clear();
     }
 }
