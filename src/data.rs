@@ -1,4 +1,7 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Child};
+
+/// Re-exporting pid_t as isize
+pub type Pid = isize;
 
 /// private struct to represent logical chaining
 /// these are all *left-associative*
@@ -38,4 +41,7 @@ pub struct History {
 }
 
 /// Storing all the active processes
-pub struct ProcessInfo {}
+pub struct ProcessInfo {
+    // if no child, then this process is already done
+    pub child: Option<Child>,
+}

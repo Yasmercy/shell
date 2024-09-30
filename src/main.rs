@@ -1,4 +1,5 @@
 #![feature(linux_pidfd)]
+#![feature(extract_if)]
 
 mod builtins;
 mod command;
@@ -41,6 +42,7 @@ enum Command {
 
 fn mainloop(read: RawFd, write: Option<RawFd>) {
     let mut line = String::new();
+    let mut processes = Vec::new();
 
     print_prompt(
         &std::env::current_dir().unwrap(),
@@ -54,13 +56,23 @@ fn mainloop(read: RawFd, write: Option<RawFd>) {
         }
 
         if let Some(command) = data::Command::new(&line) {
-            let _pinfo = ProcessInfo::execute(command);
-            print_prompt(&std::env::current_dir().unwrap(), std::process::id() as isize);
+            if let Ok(pinfo) = ProcessInfo::execute(command) {
+                print_prompt(
+                    &std::env::current_dir().unwrap(),
+                    std::process::id() as isize,
+                );
+
+                if !pinfo.done() {
+                    processes.push(pinfo);
+                }
+            }
         } else {
             print_usage();
         }
 
         line.clear();
+
+        ProcessInfo::reap(&mut processes);
     }
 }
 
